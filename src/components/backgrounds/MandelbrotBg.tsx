@@ -3,128 +3,84 @@
 import { useEffect, useRef } from "react";
 
 export default function MandelbrotBg() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.55";
+    document.body.prepend(canvas);
 
+    const ctx = canvas.getContext("2d")!;
     let W = window.innerWidth, H = window.innerHeight;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = W * dpr; canvas.height = H * dpr;
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     ctx.scale(dpr, dpr);
 
-    let animId: number;
-
-    // Initial zoom/pan settings
-    let zoom = 1.0;
-    let offsetX = -0.5;
-    let offsetY = 0.0;
-    const targetZoom = 1.0;
-    const targetOffsetX = -0.5;
-    const targetOffsetY = 0.0;
-    let time = 0;
+    let time = 0, zoom = 1.0, ox = -0.5, oy = 0;
+    let lastRender = 0;
 
     function resize() {
       W = window.innerWidth; H = window.innerHeight;
-      canvas!.width = W * dpr; canvas!.height = H * dpr;
-      canvas!.style.width = W + "px"; canvas!.style.height = H + "px";
-      ctx!.scale(dpr, dpr);
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + "px"; canvas.style.height = H + "px";
+      ctx.scale(dpr, dpr);
     }
     window.addEventListener("resize", resize);
 
-    function drawMandelbrot(cx: number, cy: number, w: number, h: number, zoomLevel: number) {
-      const maxIter = 40;
-      const imageData = ctx!.createImageData(w, h);
-      const data = imageData.data;
+    function render() {
+      time += 0.001;
+      const driftX = Math.sin(time * 0.01) * 0.02;
+      const driftY = Math.cos(time * 0.015) * 0.02;
+      const cx = ox + driftX, cy = oy + driftY;
+
+      const maxIter = 35;
+      const w = Math.floor(W), h = Math.floor(H);
+      const img = ctx.createImageData(w, h);
+      const d = img.data;
 
       for (let py = 0; py < h; py++) {
         for (let px = 0; px < w; px++) {
-          const x0 = cx + (px / w - 0.5) * 3.0 / zoomLevel;
-          const y0 = cy + (py / h - 0.5) * 3.0 / zoomLevel * (h / w);
-
-          let x = 0, y = 0;
-          let iter = 0;
+          const x0 = cx + (px / w - 0.5) * 3.0 / zoom;
+          const y0 = cy + (py / h - 0.5) * 3.0 / zoom * (h / w);
+          let x = 0, y = 0, iter = 0;
           while (x * x + y * y < 4 && iter < maxIter) {
             const xt = x * x - y * y + x0;
-            y = 2 * x * y + y0;
-            x = xt;
-            iter++;
+            y = 2 * x * y + y0; x = xt; iter++;
           }
-
           const idx = (py * w + px) * 4;
           if (iter === maxIter) {
-            data[idx] = 5; data[idx + 1] = 0; data[idx + 2] = 15; data[idx + 3] = 255;
+            d[idx] = 5; d[idx + 1] = 0; d[idx + 2] = 15; d[idx + 3] = 255;
           } else {
             const t = iter / maxIter;
-            // Map iteration count to color cycling
             const hue = (iter * 30 + t * 60) % 360;
-            const sat = 100;
-            const lit = 40 + t * 40;
-            // HSL to RGB
-            const s = sat / 100;
-            const l = lit / 100;
+            const s = 1, l = 0.35 + t * 0.45;
             const c2 = (1 - Math.abs(2 * l - 1)) * s;
             const x2 = c2 * (1 - Math.abs((hue / 60) % 2 - 1));
             const m2 = l - c2 / 2;
             let r = 0, g = 0, b = 0;
-            if (hue < 60) { r = c2; g = x2; b = 0; }
-            else if (hue < 120) { r = x2; g = c2; b = 0; }
-            else if (hue < 180) { r = 0; g = c2; b = x2; }
-            else if (hue < 240) { r = 0; g = x2; b = c2; }
-            else if (hue < 300) { r = x2; g = 0; b = c2; }
-            else { r = c2; g = 0; b = x2; }
-            data[idx] = Math.min(255, Math.floor((r + m2) * 255));
-            data[idx + 1] = Math.min(255, Math.floor((g + m2) * 255));
-            data[idx + 2] = Math.min(255, Math.floor((b + m2) * 255));
-            data[idx + 3] = 255;
+            if (hue < 60) { r = c2; g = x2; }
+            else if (hue < 120) { r = x2; g = c2; }
+            else if (hue < 180) { g = c2; b = x2; }
+            else if (hue < 240) { g = x2; b = c2; }
+            else if (hue < 300) { r = x2; b = c2; }
+            else { r = c2; b = x2; }
+            d[idx] = Math.min(255, Math.floor((r + m2) * 255));
+            d[idx + 1] = Math.min(255, Math.floor((g + m2) * 255));
+            d[idx + 2] = Math.min(255, Math.floor((b + m2) * 255));
+            d[idx + 3] = 255;
           }
         }
       }
-
-      ctx!.putImageData(imageData, 0, 0);
+      ctx.putImageData(img, 0, 0);
+      lastRender = time;
+      requestAnimationFrame(render);
     }
 
-    function draw() {
-      time += 0.001;
-      // Very slow drift
-      const driftX = Math.sin(time * 0.01) * 0.02;
-      const driftY = Math.cos(time * 0.015) * 0.02;
+    render();
 
-      drawMandelbrot(
-        offsetX + driftX,
-        offsetY + driftY,
-        Math.floor(W),
-        Math.floor(H),
-        zoom
-      );
-
-      animId = requestAnimationFrame(draw);
-    }
-
-    // Initial render, then animate with slow drift
-    drawMandelbrot(offsetX, offsetY, Math.floor(W), Math.floor(H), zoom);
-
-    // Start slow animation after a brief pause
-    const pauseTimeout = setTimeout(() => {
-      animId = requestAnimationFrame(draw);
-    }, 2000);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      clearTimeout(pauseTimeout);
-      window.removeEventListener("resize", resize);
-    };
+    return () => { canvas.remove(); window.removeEventListener("resize", resize); };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.55 }}
-    />
-  );
+  return <div ref={ref} />;
 }
