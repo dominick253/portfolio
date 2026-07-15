@@ -2,28 +2,27 @@
 
 import { useEffect, useRef } from "react";
 
-const PERM = new Uint8Array(512);
-{
+// Minimal 2D value noise — cheap
+const P = new Uint8Array(512);
+(() => {
   const p = new Uint8Array(256);
   for (let i = 0; i < 256; i++) p[i] = i;
-  let s = Date.now() ^ 0x5bd1e995;
-  for (let i = 255; i > 0; i--) { s = (s * 16807 + 0) & 0x7fffffff; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; }
-  for (let i = 0; i < 512; i++) PERM[i] = p[i & 255];
+  let s = Date.now() & 0x7fffffff;
+  for (let i = 255; i > 0; i--) { s = (s * 16807) & 0x7fffffff; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; }
+  for (let i = 0; i < 512; i++) P[i] = p[i & 255];
+})();
+
+function lerp(a: number, b: number, t: number) { return a + t * (b - a); }
+function n2D(x: number, y: number) {
+  const ix = Math.floor(x) & 255, iy = Math.floor(y) & 255;
+  const fx = x - Math.floor(x), fy = y - Math.floor(y);
+  const ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10);
+  const uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10);
+  const a = P[ix] + iy, b = P[ix + 1] + iy;
+  return lerp(lerp(P[a] / 128 - 1, P[b] / 128 - 1, ux), lerp(P[a + 1] / 128 - 1, P[b + 1] / 128 - 1, ux), uy);
 }
-function fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
-function lerp(t: number, a: number, b: number) { return a + t * (b - a); }
-function grad(hash: number, x: number, y: number) { const h = hash & 3; return h === 0 ? x + y : h === 1 ? -x + y : h === 2 ? x - y : -x - y; }
-function noise2D(x: number, y: number) {
-  const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
-  const xf = x - Math.floor(x), yf = y - Math.floor(y);
-  const u = fade(xf), v = fade(yf);
-  const a = PERM[X] + Y, b = PERM[X+1] + Y;
-  return lerp(v, lerp(u, grad(PERM[a], xf, yf), grad(PERM[b], xf-1, yf)), lerp(u, grad(PERM[a+1], xf, yf-1), grad(PERM[b+1], xf-1, yf-1)));
-}
-function fbm(x: number, y: number, oct=4) {
-  let val = 0, amp = 1, freq = 1, max = 0;
-  for (let i = 0; i < oct; i++) { val += noise2D(x*freq, y*freq)*amp; max += amp; amp*=0.5; freq*=2; }
-  return val/max;
+function fbm2(x: number, y: number) {
+  return n2D(x, y) * 0.5 + n2D(x * 2, y * 2) * 0.25 + n2D(x * 4, y * 4) * 0.125;
 }
 
 export default function FlowFieldBg() {
@@ -31,54 +30,93 @@ export default function FlowFieldBg() {
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.35";
+    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.3";
     document.body.prepend(canvas);
 
     const ctx = canvas.getContext("2d")!;
-    let W = window.innerWidth, H = window.innerHeight;
-    canvas.width = W; canvas.height = H;
+    let W = 0, H = 0;
 
-    const particles = Array.from({ length: 600 }, () => ({
-      x: Math.random() * W, y: Math.random() * H,
-      hue: Math.random() * 360,
-    }));
+    // Cache noise field on grid for performance
+    const gridRes = 40;
+    let gridW = 0, gridH = 0;
+    let noiseGrid: Float32Array = new Float32Array(0);
+    let gridX = 0, gridY = 0;
 
-    function resize() { W = window.innerWidth; H = window.innerHeight; canvas.width = W; canvas.height = H; }
+    function buildGrid() {
+      gridW = Math.ceil(W / gridRes) + 2;
+      gridH = Math.ceil(H / gridRes) + 2;
+      noiseGrid = new Float32Array(gridW * gridH);
+      gridX = Math.random() * 1000;
+      gridY = Math.random() * 1000;
+      for (let y = 0; y < gridH; y++) {
+        for (let x = 0; x < gridW; x++) {
+          const px = (x - 1) * gridRes, py = (y - 1) * gridRes;
+          noiseGrid[y * gridW + x] = fbm2((px + gridX) * 0.003, (py + gridY) * 0.003) * Math.PI * 4;
+        }
+      }
+    }
+
+    // Particles as simple objects
+    const particleCount = 200;
+    const xs = new Float32Array(particleCount);
+    const ys = new Float32Array(particleCount);
+    const hs = new Float32Array(particleCount); // hue
+    const ls = new Float32Array(particleCount); // life (for breathing)
+
+    function initParticles() {
+      for (let i = 0; i < particleCount; i++) {
+        xs[i] = Math.random() * W;
+        ys[i] = Math.random() * H;
+        hs[i] = Math.random() * 360;
+        ls[i] = Math.random();
+      }
+    }
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W; canvas.height = H;
+      buildGrid();
+      initParticles();
+    }
     window.addEventListener("resize", resize);
+    resize();
+
+    // Pre-create an offscreen canvas for noise grid rendering
+    // to avoid per-frame allocations
 
     function draw() {
-      // Very subtle trail fade — builds up flow traces over time
-      ctx.fillStyle = "rgba(1,1,2,0.03)";
+      // Trail fade — single fill is fast
+      ctx.fillStyle = "rgba(1,1,2,0.06)";
       ctx.fillRect(0, 0, W, H);
-      ctx.globalCompositeOperation = "lighter";
 
-      for (const p of particles) {
-        const scale = 0.0025;
-        const angle = fbm(p.x * scale, p.y * scale, 3) * Math.PI * 4;
-        const speed = 0.5;
-        const dx = Math.cos(angle) * speed;
-        const dy = Math.sin(angle) * speed;
-        p.x += dx;
-        p.y += dy;
-        p.hue += 0.05;
-        if (p.hue > 360) p.hue -= 360;
+      const speed = 0.6;
+      const dt = 0.016;
 
-        if (p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10) {
-          p.x = Math.random() * W;
-          p.y = Math.random() * H;
+      for (let i = 0; i < particleCount; i++) {
+        // Lookup noise from grid
+        const gx = Math.floor((xs[i] + gridX * 0.003) / gridRes);
+        const gy = Math.floor((ys[i] + gridY * 0.003) / gridRes);
+        const gi = gy * gridW + gx;
+        const angle = gi >= 0 && gi < noiseGrid.length ? noiseGrid[gi] : 0;
+
+        xs[i] += Math.cos(angle) * speed;
+        ys[i] += Math.sin(angle) * speed;
+        hs[i] += 0.03; if (hs[i] > 360) hs[i] -= 360;
+        ls[i] += 0.01;
+
+        // Wrap
+        if (xs[i] < -5 || xs[i] > W + 5 || ys[i] < -5 || ys[i] > H + 5) {
+          xs[i] = Math.random() * W;
+          ys[i] = Math.random() * H;
         }
 
-        // Draw as a dot with glow — accumulates into flow traces
-        const alpha = 0.04;
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 65%, ${alpha})`;
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = `hsla(${p.hue}, 80%, 60%, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-        ctx.fill();
+        // Draw as tiny dot — no shadow, no arc overhead
+        const bright = 0.5 + Math.sin(ls[i] * Math.PI * 2) * 0.2;
+        ctx.fillStyle = `hsla(${hs[i]}, 80%, ${60 + bright * 20}%, 0.03)`;
+        ctx.globalCompositeOperation = "lighter";
+        ctx.fillRect(xs[i] - 0.5, ys[i] - 0.5, 1.5, 1.5);
+        ctx.globalCompositeOperation = "source-over";
       }
-      ctx.shadowBlur = 0;
-      ctx.globalCompositeOperation = "source-over";
 
       requestAnimationFrame(draw);
     }
