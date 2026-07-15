@@ -30,8 +30,9 @@ export default function Navigation() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "glass-strong shadow-lg shadow-black/40" : ""
+          isScrolled ? "shadow-lg shadow-black/40" : ""
         }`}
+        style={{ backgroundColor: isScrolled ? "rgba(15,16,17,0.92)" : "rgba(15,16,17,0.7)" }}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
