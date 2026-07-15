@@ -63,8 +63,7 @@ export default function PerlinNoiseBg() {
     window.addEventListener("resize", resize);
 
     function draw() {
-      ctx!.fillStyle = "rgba(1,1,2,0.06)";
-      ctx!.fillRect(0, 0, W, H);
+      ctx!.clearRect(0, 0, W, H);
       ctx!.globalCompositeOperation = "lighter";
 
       for (const p of particles) {
@@ -83,12 +82,12 @@ export default function PerlinNoiseBg() {
         }
 
         const hue = 220 + (fbm(p.x * 0.004, p.y * 0.004, 2) * 0.5 + 0.5) * 60;
-        const alpha = (0.2 + Math.abs(Math.sin(p.life * Math.PI * 2)) * 0.2) * 0.5;
+        const alpha = 0.4 + Math.abs(Math.sin(p.life * Math.PI * 2)) * 0.3;
         const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        const len = Math.min(6, spd * 3);
+        const len = Math.min(8, spd * 3);
 
-        ctx!.strokeStyle = `hsla(${hue}, 70%, 65%, ${alpha})`;
-        ctx!.lineWidth = 1.2;
+        ctx!.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
+        ctx!.lineWidth = 1.5;
         ctx!.beginPath();
         ctx!.moveTo(p.x, p.y);
         ctx!.lineTo(p.x - p.vx * len * 2, p.y - p.vy * len * 2);
@@ -111,7 +110,7 @@ export default function PerlinNoiseBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.35 }}
+      style={{ zIndex: -1, opacity: 0.5 }}
     />
   );
 }

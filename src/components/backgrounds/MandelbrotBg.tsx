@@ -60,9 +60,9 @@ export default function MandelbrotBg() {
             data[idx] = 0; data[idx + 1] = 0; data[idx + 2] = 5; data[idx + 3] = 255;
           } else {
             const t = iter / maxIter;
-            const r = Math.floor(94 * t * 0.5);
-            const g = Math.floor(106 * t * 0.3);
-            const b = Math.floor(210 * t * 0.6);
+            const r = Math.floor(94 + t * 160);
+            const g = Math.floor(106 + t * 80);
+            const b = Math.floor(210 + t * 45);
             data[idx] = Math.min(255, r);
             data[idx + 1] = Math.min(255, g);
             data[idx + 2] = Math.min(255, b);
@@ -110,7 +110,7 @@ export default function MandelbrotBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.18 }}
+      style={{ zIndex: -1, opacity: 0.4 }}
     />
   );
 }

@@ -15,11 +15,11 @@ export default function VoronoiBg() {
     canvas.width = W; canvas.height = H;
     let animId: number;
 
-    const seedCount = Math.min(18, Math.floor((W * H) / 18000));
+    const seedCount = Math.min(20, Math.floor((W * H) / 15000));
     const seeds = Array.from({ length: seedCount }, () => ({
       x: Math.random() * W, y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.6,
-      vy: (Math.random() - 0.5) * 0.6,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
       hue: Math.random() * 360,
     }));
 
@@ -30,10 +30,11 @@ export default function VoronoiBg() {
     window.addEventListener("resize", resize);
 
     function draw() {
-      // Move seeds slowly
+      ctx!.clearRect(0, 0, W, H);
+
       for (const s of seeds) {
-        s.x += s.vx * 0.05; s.y += s.vy * 0.05;
-        s.hue += 0.02;
+        s.x += s.vx * 0.08; s.y += s.vy * 0.08;
+        s.hue += 0.03;
         if (s.hue > 360) s.hue -= 360;
         if (s.x < 5 || s.x > W - 5) s.vx *= -1;
         if (s.y < 5 || s.y > H - 5) s.vy *= -1;
@@ -41,7 +42,6 @@ export default function VoronoiBg() {
         s.y = Math.max(5, Math.min(H - 5, s.y));
       }
 
-      // Render low-res Voronoi
       const res = 4;
       const rw = Math.floor(W / res), rh = Math.floor(H / res);
       const img = ctx!.createImageData(rw, rh);
@@ -61,38 +61,36 @@ export default function VoronoiBg() {
           const edgeDist = Math.sqrt(secondD) - Math.sqrt(minD);
           const pi = (y * rw + x) * 4;
           const seed = seeds[minI];
-          const h = (seed.hue + Math.sqrt(minD) * 0.02) % 360;
+          const h = (seed.hue + Math.sqrt(minD) * 0.03) % 360;
           const c = 0.7;
           const x2 = c * (1 - Math.abs((h / 60) % 2 - 1));
-          const m = 8;
+          const m = 5;
           let r: number, g: number, b: number;
-          if (h < 60) { r = m + (c + x2) * 200; g = m + x2 * 200; b = m; }
-          else if (h < 120) { r = m + x2 * 200; g = m + (c + x2) * 200; b = m; }
-          else if (h < 180) { r = m; g = m + (c + x2) * 200; b = m + x2 * 200; }
-          else if (h < 240) { r = m; g = m + x2 * 200; b = m + (c + x2) * 200; }
-          else if (h < 300) { r = m + x2 * 200; g = m; b = m + (c + x2) * 200; }
-          else { r = m + (c + x2) * 200; g = m; b = m + x2 * 200; }
+          if (h < 60) { r = m + (c + x2) * 220; g = m + x2 * 220; b = m; }
+          else if (h < 120) { r = m + x2 * 220; g = m + (c + x2) * 220; b = m; }
+          else if (h < 180) { r = m; g = m + (c + x2) * 220; b = m + x2 * 220; }
+          else if (h < 240) { r = m; g = m + x2 * 220; b = m + (c + x2) * 220; }
+          else if (h < 300) { r = m + x2 * 220; g = m; b = m + (c + x2) * 220; }
+          else { r = m + (c + x2) * 220; g = m; b = m + x2 * 220; }
 
           if (edgeDist < res * 2 && edgeDist > 0) {
-            d[pi] = Math.floor(r * 0.12); d[pi + 1] = Math.floor(g * 0.12); d[pi + 2] = Math.floor(b * 0.12);
+            d[pi] = Math.floor(r * 0.25); d[pi + 1] = Math.floor(g * 0.25); d[pi + 2] = Math.floor(b * 0.25);
           } else {
-            d[pi] = Math.min(255, r + 10); d[pi + 1] = Math.min(255, g + 10); d[pi + 2] = Math.min(255, b + 5);
+            d[pi] = Math.min(255, r + 5); d[pi + 1] = Math.min(255, g + 5); d[pi + 2] = Math.min(255, b + 5);
           }
           d[pi + 3] = 255;
         }
       }
 
-      ctx!.fillStyle = "#010102";
-      ctx!.fillRect(0, 0, W, H);
       const temp = document.createElement("canvas");
       temp.width = rw; temp.height = rh;
       const tctx = temp.getContext("2d")!;
       tctx.putImageData(img, 0, 0);
       ctx!.drawImage(temp, 0, 0, W, H);
 
-      ctx!.fillStyle = "rgba(255,255,255,0.3)";
+      ctx!.fillStyle = "rgba(255,255,255,0.5)";
       for (const s of seeds) {
-        ctx!.beginPath(); ctx!.arc(s.x, s.y, 1.5, 0, Math.PI * 2); ctx!.fill();
+        ctx!.beginPath(); ctx!.arc(s.x, s.y, 2, 0, Math.PI * 2); ctx!.fill();
       }
 
       animId = requestAnimationFrame(draw);
@@ -110,7 +108,7 @@ export default function VoronoiBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.2 }}
+      style={{ zIndex: -1, opacity: 0.55 }}
     />
   );
 }

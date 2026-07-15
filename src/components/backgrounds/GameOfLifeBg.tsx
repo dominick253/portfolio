@@ -15,7 +15,7 @@ export default function GameOfLifeBg() {
     canvas.width = W; canvas.height = H;
     let animId: number;
 
-    const cellSize = 8;
+    const cellSize = 10;
     let cols = 0, rows = 0;
     let a: Uint8Array, b: Uint8Array;
     let gen = 0;
@@ -26,7 +26,7 @@ export default function GameOfLifeBg() {
       a = new Uint8Array(cols * rows);
       b = new Uint8Array(cols * rows);
       for (let i = 0; i < a.length; i++) {
-        a[i] = Math.random() < 0.18 ? 1 : 0;
+        a[i] = Math.random() < 0.22 ? 1 : 0;
       }
       gen = 0;
     }
@@ -58,16 +58,16 @@ export default function GameOfLifeBg() {
 
     function draw() {
       step();
-      ctx!.fillStyle = "#010102";
-      ctx!.fillRect(0, 0, W, H);
+      ctx!.clearRect(0, 0, W, H);
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           if (a[y * cols + x]) {
-            const brightness = 0.2 + (gen % 60) / 200;
-            ctx!.fillStyle = `rgba(94,106,210,${brightness * 0.6})`;
-            ctx!.shadowBlur = 2;
-            ctx!.shadowColor = "rgba(94,106,210,0.2)";
+            const hue = (gen * 0.5 + x * 2 + y * 3) % 360;
+            const brightness = 0.6 + (gen % 30) / 100;
+            ctx!.fillStyle = `hsla(${hue}, 90%, ${brightness * 70}%, 0.7)`;
+            ctx!.shadowBlur = 6;
+            ctx!.shadowColor = `hsla(${hue}, 90%, 60%, 0.5)`;
             ctx!.fillRect(x * cellSize + 1, y * cellSize + 1, cellSize - 2, cellSize - 2);
           }
         }
@@ -89,7 +89,7 @@ export default function GameOfLifeBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.2 }}
+      style={{ zIndex: -1, opacity: 0.5 }}
     />
   );
 }

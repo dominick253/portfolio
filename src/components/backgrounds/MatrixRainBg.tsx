@@ -15,8 +15,8 @@ export default function MatrixRainBg() {
     canvas.width = W; canvas.height = H;
     let animId: number;
 
-    const chars = "ｲﾘﾆｵﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵ01<>{}[]/\\";
-    const fs = 10;
+    const chars = "ｲﾘﾆｵﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵ01<>{}[]/\\✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦✦";
+    const fs = 14;
     let drops: number[] = [];
 
     function initDrops() {
@@ -32,12 +32,14 @@ export default function MatrixRainBg() {
     }
     window.addEventListener("resize", resize);
 
-    function draw() {
-      ctx!.fillStyle = "rgba(1,1,2,0.12)";
-      ctx!.fillRect(0, 0, W, H);
-      ctx!.font = `${fs}px monospace`;
+    const rainbow = Array.from({ length: 360 }, (hue) => `hsl(${hue}, 100%, 60%)`);
 
-      if (Math.random() < 0.08) {
+    function draw() {
+      ctx!.fillStyle = "rgba(1,1,2,0.05)";
+      ctx!.fillRect(0, 0, W, H);
+      ctx!.font = `bold ${fs}px monospace`;
+
+      if (Math.random() < 0.12) {
         drops[Math.random() * drops.length | 0] = -1;
       }
       for (let i = 0; i < drops.length; i++) {
@@ -48,13 +50,12 @@ export default function MatrixRainBg() {
         const x = i * fs, y = drops[i] * fs;
         if (y < -fs || y > H + fs) continue;
         const ch = chars[Math.random() * chars.length | 0];
-        if (Math.random() > 0.88) {
-          ctx!.fillStyle = "rgba(140,212,26,0.6)";
-          ctx!.shadowBlur = 4; ctx!.shadowColor = "rgba(118,185,0,0.3)";
+        if (Math.random() > 0.92) {
+          ctx!.fillStyle = "#ffffff";
+          ctx!.shadowBlur = 12; ctx!.shadowColor = rainbow[i % 360];
         } else {
-          const green = 80 + Math.random() * 60 | 0;
-          ctx!.fillStyle = `rgba(20,${green},30,0.25)`;
-          ctx!.shadowBlur = 0;
+          ctx!.fillStyle = rainbow[i % 360];
+          ctx!.shadowBlur = 4; ctx!.shadowColor = rainbow[i % 360];
         }
         ctx!.fillText(ch, x, y);
       }
@@ -74,7 +75,7 @@ export default function MatrixRainBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.25 }}
+      style={{ zIndex: -1, opacity: 0.6 }}
     />
   );
 }
