@@ -52,7 +52,7 @@ export default function FlowFieldBg() {
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.4";
+    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.36";
     document.body.prepend(canvas);
 
     const ctx = canvas.getContext("2d")!;

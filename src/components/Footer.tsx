@@ -13,8 +13,8 @@ const links = [
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/dominick253", icon: Globe },
   { label: "YouTube", href: "https://www.youtube.com/channel/UCLJ1DvfOket2VpfooqYVPmQ", icon: Video },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/dominickpescetto", icon: UserPlus },
-  { label: "Email", href: "mailto:hello@dominickp.com", icon: Mail },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/dominick-pescetto-771a7616b/", icon: UserPlus },
+  { label: "Email", href: "mailto:dominick253@gmail.com", icon: Mail },
 ];
 
 export default function Footer() {

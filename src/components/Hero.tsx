@@ -113,6 +113,9 @@ export default function Hero() {
           <a href="/contact" className="btn-outline !text-xs !py-3 !px-7">
             Get in Touch
           </a>
+          <a href="https://resume.dominickp.com" target="_blank" rel="noopener noreferrer" className="btn-outline !text-xs !py-3 !px-7">
+            Resume
+          </a>
         </motion.div>
 
         {/* Social */}
@@ -120,10 +123,10 @@ export default function Hero() {
           <a href="https://github.com/dominick253" target="_blank" rel="noopener noreferrer" className="p-2.5 text-text-muted hover:text-text-primary transition-colors rounded-xl hover:bg-surface border border-transparent hover:border-border" aria-label="GitHub">
             <Globe className="w-4 h-4" />
           </a>
-          <a href="https://www.linkedin.com/in/dominickpescetto" target="_blank" rel="noopener noreferrer" className="p-2.5 text-text-muted hover:text-text-primary transition-colors rounded-xl hover:bg-surface border border-transparent hover:border-border" aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/dominick-pescetto-771a7616b/" target="_blank" rel="noopener noreferrer" className="p-2.5 text-text-muted hover:text-text-primary transition-colors rounded-xl hover:bg-surface border border-transparent hover:border-border" aria-label="LinkedIn">
             <UserPlus className="w-4 h-4" />
           </a>
-          <a href="mailto:hello@dominickp.com" className="p-2.5 text-text-muted hover:text-text-primary transition-colors rounded-xl hover:bg-surface border border-transparent hover:border-border" aria-label="Email">
+          <a href="mailto:dominick253@gmail.com" className="p-2.5 text-text-muted hover:text-text-primary transition-colors rounded-xl hover:bg-surface border border-transparent hover:border-border" aria-label="Email">
             <Mail className="w-4 h-4" />
           </a>
         </motion.div>
