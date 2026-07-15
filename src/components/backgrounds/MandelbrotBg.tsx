@@ -57,15 +57,29 @@ export default function MandelbrotBg() {
 
           const idx = (py * w + px) * 4;
           if (iter === maxIter) {
-            data[idx] = 0; data[idx + 1] = 0; data[idx + 2] = 5; data[idx + 3] = 255;
+            data[idx] = 5; data[idx + 1] = 0; data[idx + 2] = 15; data[idx + 3] = 255;
           } else {
             const t = iter / maxIter;
-            const r = Math.floor(94 + t * 160);
-            const g = Math.floor(106 + t * 80);
-            const b = Math.floor(210 + t * 45);
-            data[idx] = Math.min(255, r);
-            data[idx + 1] = Math.min(255, g);
-            data[idx + 2] = Math.min(255, b);
+            // Map iteration count to color cycling
+            const hue = (iter * 30 + t * 60) % 360;
+            const sat = 100;
+            const lit = 40 + t * 40;
+            // HSL to RGB
+            const s = sat / 100;
+            const l = lit / 100;
+            const c2 = (1 - Math.abs(2 * l - 1)) * s;
+            const x2 = c2 * (1 - Math.abs((hue / 60) % 2 - 1));
+            const m2 = l - c2 / 2;
+            let r = 0, g = 0, b = 0;
+            if (hue < 60) { r = c2; g = x2; b = 0; }
+            else if (hue < 120) { r = x2; g = c2; b = 0; }
+            else if (hue < 180) { r = 0; g = c2; b = x2; }
+            else if (hue < 240) { r = 0; g = x2; b = c2; }
+            else if (hue < 300) { r = x2; g = 0; b = c2; }
+            else { r = c2; g = 0; b = x2; }
+            data[idx] = Math.min(255, Math.floor((r + m2) * 255));
+            data[idx + 1] = Math.min(255, Math.floor((g + m2) * 255));
+            data[idx + 2] = Math.min(255, Math.floor((b + m2) * 255));
             data[idx + 3] = 255;
           }
         }
@@ -110,7 +124,7 @@ export default function MandelbrotBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.4 }}
+      style={{ zIndex: -1, opacity: 0.55 }}
     />
   );
 }

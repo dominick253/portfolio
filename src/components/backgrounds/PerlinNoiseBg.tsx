@@ -2,35 +2,24 @@
 
 import { useEffect, useRef } from "react";
 
-/* Perlin noise permutation table (seeded at module load) */
+/* Seeded Perlin noise */
 const PERM = new Uint8Array(512);
 {
   const p = new Uint8Array(256);
   for (let i = 0; i < 256; i++) p[i] = i;
   let s = Date.now() ^ 0x5bd1e995;
-  for (let i = 255; i > 0; i--) {
-    s = (s * 16807 + 0) & 0x7fffffff;
-    const j = s % (i + 1);
-    [p[i], p[j]] = [p[j], p[i]];
-  }
+  for (let i = 255; i > 0; i--) { s = (s * 16807 + 0) & 0x7fffffff; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; }
   for (let i = 0; i < 512; i++) PERM[i] = p[i & 255];
 }
-
 function fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
 function lerp(t: number, a: number, b: number) { return a + t * (b - a); }
-function grad(hash: number, x: number, y: number) {
-  const h = hash & 3;
-  return h === 0 ? x + y : h === 1 ? -x + y : h === 2 ? x - y : -x - y;
-}
+function grad(hash: number, x: number, y: number) { const h = hash & 3; return h === 0 ? x + y : h === 1 ? -x + y : h === 2 ? x - y : -x - y; }
 function noise2D(x: number, y: number) {
   const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
   const xf = x - Math.floor(x), yf = y - Math.floor(y);
   const u = fade(xf), v = fade(yf);
   const a = PERM[X] + Y, b = PERM[X + 1] + Y;
-  return lerp(v,
-    lerp(u, grad(PERM[a], xf, yf), grad(PERM[b], xf - 1, yf)),
-    lerp(u, grad(PERM[a + 1], xf, yf - 1), grad(PERM[b + 1], xf - 1, yf - 1))
-  );
+  return lerp(v, lerp(u, grad(PERM[a], xf, yf), grad(PERM[b], xf - 1, yf)), lerp(u, grad(PERM[a + 1], xf, yf - 1), grad(PERM[b + 1], xf - 1, yf - 1)));
 }
 function fbm(x: number, y: number, oct = 4) {
   let val = 0, amp = 1, freq = 1, max = 0;
@@ -38,7 +27,7 @@ function fbm(x: number, y: number, oct = 4) {
   return val / max;
 }
 
-export default function PerlinNoiseBg() {
+export default function FlowFieldBg() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -47,13 +36,13 @@ export default function PerlinNoiseBg() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let animId: number;
     let W = window.innerWidth, H = window.innerHeight;
     canvas.width = W; canvas.height = H;
+    let animId: number;
 
-    const particles = Array.from({ length: 800 }, () => ({
+    const particles = Array.from({ length: 400 }, () => ({
       x: Math.random() * W, y: Math.random() * H,
-      vx: 0, vy: 0, life: Math.random(),
+      vx: 0, vy: 0, hue: Math.random() * 360,
     }));
 
     function resize() {
@@ -63,38 +52,41 @@ export default function PerlinNoiseBg() {
     window.addEventListener("resize", resize);
 
     function draw() {
-      ctx!.clearRect(0, 0, W, H);
-      ctx!.globalCompositeOperation = "lighter";
+      // Semi-transparent trail fade (dark, not opaque black)
+      ctx!.fillStyle = "rgba(1,1,2,0.15)";
+      ctx!.fillRect(0, 0, W, H);
 
       for (const p of particles) {
         const scale = 0.003;
-        const angle = fbm(p.x * scale, p.y * scale, 3) * Math.PI * 4;
-        const speed = 1.2;
-        p.vx += Math.cos(angle) * 0.12 * speed;
-        p.vy += Math.sin(angle) * 0.12 * speed;
-        p.vx *= 0.95; p.vy *= 0.95;
+        const angle = fbm(p.x * scale, p.y * scale, 3) * Math.PI * 3;
+        const speed = 2.5;
+        p.vx += Math.cos(angle) * 0.3 * speed;
+        p.vy += Math.sin(angle) * 0.3 * speed;
+        p.vx *= 0.92; p.vy *= 0.92;
         p.x += p.vx; p.y += p.vy;
-        p.life += 0.002 * speed;
+        p.hue += 0.3;
+        if (p.hue > 360) p.hue -= 360;
 
         if (p.x < -20 || p.x > W + 20 || p.y < -20 || p.y > H + 20) {
           p.x = Math.random() * W; p.y = Math.random() * H;
           p.vx = 0; p.vy = 0;
         }
 
-        const hue = 220 + (fbm(p.x * 0.004, p.y * 0.004, 2) * 0.5 + 0.5) * 60;
-        const alpha = 0.4 + Math.abs(Math.sin(p.life * Math.PI * 2)) * 0.3;
         const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        const len = Math.min(8, spd * 3);
+        const len = Math.min(20, spd * 4);
+        const alpha = Math.min(0.8, 0.2 + spd * 0.3);
 
-        ctx!.strokeStyle = `hsla(${hue}, 80%, 70%, ${alpha})`;
-        ctx!.lineWidth = 1.5;
+        ctx!.strokeStyle = `hsla(${p.hue}, 100%, 65%, ${alpha})`;
+        ctx!.lineWidth = 2;
+        ctx!.shadowBlur = 8;
+        ctx!.shadowColor = `hsla(${p.hue}, 100%, 60%, 0.5)`;
         ctx!.beginPath();
         ctx!.moveTo(p.x, p.y);
-        ctx!.lineTo(p.x - p.vx * len * 2, p.y - p.vy * len * 2);
+        ctx!.lineTo(p.x - p.vx * len, p.y - p.vy * len);
         ctx!.stroke();
       }
+      ctx!.shadowBlur = 0;
 
-      ctx!.globalCompositeOperation = "source-over";
       animId = requestAnimationFrame(draw);
     }
 
@@ -110,7 +102,7 @@ export default function PerlinNoiseBg() {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: -1, opacity: 0.5 }}
+      style={{ zIndex: -1, opacity: 0.6 }}
     />
   );
 }

@@ -7,12 +7,12 @@ import FeaturedProjects from "@/components/FeaturedProjects";
 import About from "@/components/About";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import PerlinNoiseBg from "@/components/backgrounds/PerlinNoiseBg";
+import FlowFieldBg from "@/components/backgrounds/PerlinNoiseBg";
 
 export default function Home() {
   return (
     <>
-      <PerlinNoiseBg />
+      <FlowFieldBg />
       <Navigation />
       <main>
         <Hero />
