@@ -68,7 +68,7 @@ export default function About() {
             className="space-y-5 text-text-secondary text-sm leading-relaxed"
           >
             <p>
-              I'm <span className="text-text-primary font-semibold">Dominick Pescetto</span> - an AI Engineer and Principal Architect building production-grade systems that actually work in the real world.
+              I'm <span className="text-text-primary font-semibold">Dominick Pescetto</span> - a Senior AI Engineer building production-grade systems that actually work in the real world.
             </p>
             <p>
               <span className="text-text-primary">AI Infrastructure</span>: local LLM deployment, agent frameworks, knowledge graphs.{" "}
