@@ -1,0 +1,116 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
+export default function VoronoiBg() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    let animId: number;
+
+    const seedCount = Math.min(18, Math.floor((W * H) / 18000));
+    const seeds = Array.from({ length: seedCount }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.6,
+      vy: (Math.random() - 0.5) * 0.6,
+      hue: Math.random() * 360,
+    }));
+
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas!.width = W; canvas!.height = H;
+    }
+    window.addEventListener("resize", resize);
+
+    function draw() {
+      // Move seeds slowly
+      for (const s of seeds) {
+        s.x += s.vx * 0.05; s.y += s.vy * 0.05;
+        s.hue += 0.02;
+        if (s.hue > 360) s.hue -= 360;
+        if (s.x < 5 || s.x > W - 5) s.vx *= -1;
+        if (s.y < 5 || s.y > H - 5) s.vy *= -1;
+        s.x = Math.max(5, Math.min(W - 5, s.x));
+        s.y = Math.max(5, Math.min(H - 5, s.y));
+      }
+
+      // Render low-res Voronoi
+      const res = 4;
+      const rw = Math.floor(W / res), rh = Math.floor(H / res);
+      const img = ctx!.createImageData(rw, rh);
+      const d = img.data;
+
+      for (let y = 0; y < rh; y++) {
+        const py = y * res + res / 2;
+        for (let x = 0; x < rw; x++) {
+          const px = x * res + res / 2;
+          let minD = Infinity, minI = 0, secondD = Infinity;
+          for (let i = 0; i < seeds.length; i++) {
+            const dx = seeds[i].x - px, dy = seeds[i].y - py;
+            const dist = dx * dx + dy * dy;
+            if (dist < minD) { secondD = minD; minD = dist; minI = i; }
+            else if (dist < secondD) { secondD = dist; }
+          }
+          const edgeDist = Math.sqrt(secondD) - Math.sqrt(minD);
+          const pi = (y * rw + x) * 4;
+          const seed = seeds[minI];
+          const h = (seed.hue + Math.sqrt(minD) * 0.02) % 360;
+          const c = 0.7;
+          const x2 = c * (1 - Math.abs((h / 60) % 2 - 1));
+          const m = 8;
+          let r: number, g: number, b: number;
+          if (h < 60) { r = m + (c + x2) * 200; g = m + x2 * 200; b = m; }
+          else if (h < 120) { r = m + x2 * 200; g = m + (c + x2) * 200; b = m; }
+          else if (h < 180) { r = m; g = m + (c + x2) * 200; b = m + x2 * 200; }
+          else if (h < 240) { r = m; g = m + x2 * 200; b = m + (c + x2) * 200; }
+          else if (h < 300) { r = m + x2 * 200; g = m; b = m + (c + x2) * 200; }
+          else { r = m + (c + x2) * 200; g = m; b = m + x2 * 200; }
+
+          if (edgeDist < res * 2 && edgeDist > 0) {
+            d[pi] = Math.floor(r * 0.12); d[pi + 1] = Math.floor(g * 0.12); d[pi + 2] = Math.floor(b * 0.12);
+          } else {
+            d[pi] = Math.min(255, r + 10); d[pi + 1] = Math.min(255, g + 10); d[pi + 2] = Math.min(255, b + 5);
+          }
+          d[pi + 3] = 255;
+        }
+      }
+
+      ctx!.fillStyle = "#010102";
+      ctx!.fillRect(0, 0, W, H);
+      const temp = document.createElement("canvas");
+      temp.width = rw; temp.height = rh;
+      const tctx = temp.getContext("2d")!;
+      tctx.putImageData(img, 0, 0);
+      ctx!.drawImage(temp, 0, 0, W, H);
+
+      ctx!.fillStyle = "rgba(255,255,255,0.3)";
+      for (const s of seeds) {
+        ctx!.beginPath(); ctx!.arc(s.x, s.y, 1.5, 0, Math.PI * 2); ctx!.fill();
+      }
+
+      animId = requestAnimationFrame(draw);
+    }
+
+    animId = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: -1, opacity: 0.2 }}
+    />
+  );
+}

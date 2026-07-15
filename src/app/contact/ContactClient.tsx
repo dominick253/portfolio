@@ -5,6 +5,7 @@ import { Mail, Globe, Video, UserPlus, ExternalLink } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
+import QuantumCloudBg from "@/components/backgrounds/QuantumCloudBg";
 
 const quickContacts = [
   { icon: Mail, label: "Email", value: "hello@dominickp.com", href: "mailto:hello@dominickp.com" },
@@ -16,6 +17,7 @@ const quickContacts = [
 export default function ContactClient() {
   return (
     <>
+      <QuantumCloudBg />
       <Navigation />
       <main className="pt-24">
         <section className="py-16">

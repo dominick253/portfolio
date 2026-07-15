@@ -7,17 +7,17 @@ import FeaturedProjects from "@/components/FeaturedProjects";
 import About from "@/components/About";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import PerlinNoiseBg from "@/components/backgrounds/PerlinNoiseBg";
 
 export default function Home() {
   return (
     <>
+      <PerlinNoiseBg />
       <Navigation />
       <main>
         <Hero />
         <FeaturedProjects />
         <About />
-
-        {/* Contact CTA */}
         <section className="py-28 relative">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#76b900]/[0.02] to-transparent" />
           <motion.div

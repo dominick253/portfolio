@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, Cpu, Network, Database, Bot, Workflow, Globe, BarChart3 } from "lucide-react";
+import { Brain, Cpu, Network, Database, Bot, Workflow, Globe } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MatrixRainBg from "@/components/backgrounds/MatrixRainBg";
 
-const aiProjects = [
+const data = [
   { icon: Brain, title: "Hermes Agent Framework", desc: "Full AI agent orchestration with intent routing, MCP integration, entity extraction, and a 600K+ node knowledge graph. 4+ microservices with systemd health monitoring.", tags: ["4 microservices", "BM25 Router", "MCP Server", "600K nodes"] },
   { icon: Network, title: "CodeGraphContext (CGC)", desc: "Code knowledge graph toolkit with LSP call resolution, Leiden community detection, Cypher queries, and hot-path risk analysis.", tags: ["Multi-repo", "Data flow", "Cross-service", "Clustering"] },
   { icon: Globe, title: "AI Knowledge Router", desc: "Multi-system RAG routing that classifies queries and dispatches to GraphRAG, wiki-rag, or codebase-memory with confidence scoring.", tags: ["4 backends", "Auto routing", "Confidence", "Hybrid search"] },
@@ -17,6 +18,7 @@ const aiProjects = [
 export default function AIClient() {
   return (
     <>
+      <MatrixRainBg />
       <Navigation />
       <main className="pt-24">
         <section className="py-16">
@@ -33,7 +35,7 @@ export default function AIClient() {
 
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
           <div className="grid sm:grid-cols-2 gap-4">
-            {aiProjects.map((p, i) => (
+            {data.map((p, i) => (
               <motion.div key={p.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="card p-5">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="p-2 rounded-lg bg-[#76b900]/10"><p.icon className="w-4 h-4 text-[#76b900]" /></div>

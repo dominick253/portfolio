@@ -5,10 +5,12 @@ import { Calendar, Tag, ArrowRight } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { blogPosts } from "@/data/projects";
+import GameOfLifeBg from "@/components/backgrounds/GameOfLifeBg";
 
 export default function BlogClient() {
   return (
     <>
+      <GameOfLifeBg />
       <Navigation />
       <main className="pt-24">
         <section className="py-16">

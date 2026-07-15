@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Server, Cpu, Cloud, GitBranch, Shield, HardDrive, Monitor, Globe, Activity } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MandelbrotBg from "@/components/backgrounds/MandelbrotBg";
 
 const infraItems = [
   { icon: Server, title: "Proxmox Cluster (2 Nodes + Pi Quorum)", desc: "HA virtualization cluster running VMs for Kubernetes, AI inference, and development. Raspberry Pi 5 as QDevice." },
@@ -27,6 +28,7 @@ const specs = [
 export default function HomelabClient() {
   return (
     <>
+      <MandelbrotBg />
       <Navigation />
       <main className="pt-24">
         <section className="py-16">

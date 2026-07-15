@@ -5,10 +5,12 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ProjectCard from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
+import VoronoiBg from "@/components/backgrounds/VoronoiBg";
 
 export default function ProjectsClient() {
   return (
     <>
+      <VoronoiBg />
       <Navigation />
       <main className="pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
