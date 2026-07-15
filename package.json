@@ -1,7 +1,9 @@
 {
-  "name": "portfolio-app",
-  "version": "0.1.0",
+  "name": "dominickp-portfolio",
+  "version": "2.0.0",
   "private": true,
+  "description": "Production portfolio for Dominick Pescetto — AI Engineer & CTV Platform Architect",
+  "author": "Dominick Pescetto",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,9 +11,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "lucide-react": "^1.24.0",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,0 +1,34 @@
+name: Portfolio CI/CD
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .next/standalone
+
+  # deploy:
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: lint-build
+  #   runs-on: [self-hosted, ctv]
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: github-pages
+  #     - name: Deploy to server
+  #       run: |
+  #         rsync -avz --delete .next/standalone/ /root/portfolio/.next/standalone/
+  #         pm2 restart portfolio
