@@ -2,125 +2,113 @@
 
 import { useEffect, useRef } from "react";
 
-// Minimal 2D value noise — cheap
-const P = new Uint8Array(512);
-(() => {
-  const p = new Uint8Array(256);
-  for (let i = 0; i < 256; i++) p[i] = i;
-  let s = Date.now() & 0x7fffffff;
-  for (let i = 255; i > 0; i--) { s = (s * 16807) & 0x7fffffff; const j = s % (i + 1); [p[i], p[j]] = [p[j], p[i]]; }
-  for (let i = 0; i < 512; i++) P[i] = p[i & 255];
+/* Perlin noise - exact copy from algo-vis-showcase */
+const Noise = (() => {
+  function shuffle(seed: number) {
+    const p = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) p[i] = i;
+    let s = seed || Date.now() ^ 0x5bd1e995;
+    for (let i = 255; i > 0; i--) {
+      s = (s * 16807 + 0) & 0x7fffffff;
+      const j = s % (i + 1);
+      [p[i], p[j]] = [p[j], p[i]];
+    }
+    return p;
+  }
+  const perm = shuffle(0);
+  const perm128 = new Uint8Array(512);
+  for (let i = 0; i < 512; i++) perm128[i] = perm[i & 255];
+  function fade(t: number) { return t * t * t * (t * (t * 6 - 15) + 10); }
+  function lerp(t: number, a: number, b: number) { return a + t * (b - a); }
+  function grad(hash: number, x: number, y: number) {
+    const h = hash & 3;
+    return (h === 0 ? x + y : h === 1 ? -x + y : h === 2 ? x - y : -x - y);
+  }
+  function noise2D(x: number, y: number) {
+    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+    const xf = x - Math.floor(x), yf = y - Math.floor(y);
+    const u = fade(xf), v = fade(yf);
+    const a = perm128[X] + Y, b = perm128[X + 1] + Y;
+    return lerp(v,
+      lerp(u, grad(perm128[a], xf, yf), grad(perm128[b], xf - 1, yf)),
+      lerp(u, grad(perm128[a + 1], xf, yf - 1), grad(perm128[b + 1], xf - 1, yf - 1))
+    );
+  }
+  function fbm(x: number, y: number, octaves = 4) {
+    let val = 0, amp = 1, freq = 1, max = 0;
+    for (let i = 0; i < octaves; i++) {
+      val += noise2D(x * freq, y * freq) * amp;
+      max += amp;
+      amp *= 0.5;
+      freq *= 2;
+    }
+    return val / max;
+  }
+  return { noise2D, fbm, perm128 };
 })();
-
-function lerp(a: number, b: number, t: number) { return a + t * (b - a); }
-function n2D(x: number, y: number) {
-  const ix = Math.floor(x) & 255, iy = Math.floor(y) & 255;
-  const fx = x - Math.floor(x), fy = y - Math.floor(y);
-  const ux = fx * fx * fx * (fx * (fx * 6 - 15) + 10);
-  const uy = fy * fy * fy * (fy * (fy * 6 - 15) + 10);
-  const a = P[ix] + iy, b = P[ix + 1] + iy;
-  return lerp(lerp(P[a] / 128 - 1, P[b] / 128 - 1, ux), lerp(P[a + 1] / 128 - 1, P[b + 1] / 128 - 1, ux), uy);
-}
-function fbm2(x: number, y: number) {
-  return n2D(x, y) * 0.5 + n2D(x * 2, y * 2) * 0.25 + n2D(x * 4, y * 4) * 0.125;
-}
 
 export default function FlowFieldBg() {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.3";
+    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.4";
     document.body.prepend(canvas);
 
     const ctx = canvas.getContext("2d")!;
     let W = 0, H = 0;
-
-    // Cache noise field on grid for performance
-    const gridRes = 40;
-    let gridW = 0, gridH = 0;
-    let noiseGrid: Float32Array = new Float32Array(0);
-    let gridX = 0, gridY = 0;
-
-    function buildGrid() {
-      gridW = Math.ceil(W / gridRes) + 2;
-      gridH = Math.ceil(H / gridRes) + 2;
-      noiseGrid = new Float32Array(gridW * gridH);
-      gridX = Math.random() * 1000;
-      gridY = Math.random() * 1000;
-      for (let y = 0; y < gridH; y++) {
-        for (let x = 0; x < gridW; x++) {
-          const px = (x - 1) * gridRes, py = (y - 1) * gridRes;
-          noiseGrid[y * gridW + x] = fbm2((px + gridX) * 0.003, (py + gridY) * 0.003) * Math.PI * 4;
-        }
-      }
-    }
-
-    // Particles as simple objects
-    const particleCount = 200;
-    const xs = new Float32Array(particleCount);
-    const ys = new Float32Array(particleCount);
-    const hs = new Float32Array(particleCount); // hue
-    const ls = new Float32Array(particleCount); // life (for breathing)
-
-    function initParticles() {
-      for (let i = 0; i < particleCount; i++) {
-        xs[i] = Math.random() * W;
-        ys[i] = Math.random() * H;
-        hs[i] = Math.random() * 360;
-        ls[i] = Math.random();
-      }
-    }
+    let particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
+    const nParticles = 900;
 
     function resize() {
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = W; canvas.height = H;
-      buildGrid();
-      initParticles();
+      particles = Array.from({ length: nParticles }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: 0, vy: 0, life: Math.random()
+      }));
     }
     window.addEventListener("resize", resize);
     resize();
 
-    // Pre-create an offscreen canvas for noise grid rendering
-    // to avoid per-frame allocations
-
     function draw() {
-      // Trail fade — single fill is fast
-      ctx.fillStyle = "rgba(1,1,2,0.06)";
-      ctx.fillRect(0, 0, W, H);
-
-      const speed = 0.6;
-      const dt = 0.016;
-
-      for (let i = 0; i < particleCount; i++) {
-        // Lookup noise from grid
-        const gx = Math.floor((xs[i] + gridX * 0.003) / gridRes);
-        const gy = Math.floor((ys[i] + gridY * 0.003) / gridRes);
-        const gi = gy * gridW + gx;
-        const angle = gi >= 0 && gi < noiseGrid.length ? noiseGrid[gi] : 0;
-
-        xs[i] += Math.cos(angle) * speed;
-        ys[i] += Math.sin(angle) * speed;
-        hs[i] += 0.03; if (hs[i] > 360) hs[i] -= 360;
-        ls[i] += 0.01;
-
-        // Wrap
-        if (xs[i] < -5 || xs[i] > W + 5 || ys[i] < -5 || ys[i] > H + 5) {
-          xs[i] = Math.random() * W;
-          ys[i] = Math.random() * H;
+      const speed = 3;
+      for (const p of particles) {
+        const scale = 0.004;
+        const angle = Noise.fbm(p.x * scale, p.y * scale, 3) * Math.PI * 4;
+        p.vx += Math.cos(angle) * 0.15 * speed;
+        p.vy += Math.sin(angle) * 0.15 * speed;
+        p.vx *= 0.95; p.vy *= 0.95;
+        p.x += p.vx; p.y += p.vy;
+        p.life += 0.001 * speed;
+        if (p.x < -20 || p.x > W + 20 || p.y < -20 || p.y > H + 20) {
+          p.x = Math.random() * W; p.y = Math.random() * H;
+          p.vx = 0; p.vy = 0;
         }
-
-        // Draw as tiny dot — no shadow, no arc overhead
-        const bright = 0.5 + Math.sin(ls[i] * Math.PI * 2) * 0.2;
-        ctx.fillStyle = `hsla(${hs[i]}, 80%, ${60 + bright * 20}%, 0.03)`;
-        ctx.globalCompositeOperation = "lighter";
-        ctx.fillRect(xs[i] - 0.5, ys[i] - 0.5, 1.5, 1.5);
-        ctx.globalCompositeOperation = "source-over";
       }
+
+      // Trail fade
+      ctx.fillStyle = "rgba(5,6,8,0.08)";
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = "lighter";
+
+      for (const p of particles) {
+        const scale = 0.006;
+        const hue = (Noise.fbm(p.x * scale, p.y * scale, 2) * 0.5 + 0.5) * 240 + 180;
+        const alpha = 0.3 + Math.abs(Math.sin(p.life * Math.PI * 2)) * 0.3;
+        const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const len = Math.min(8, spd * 3);
+        ctx.strokeStyle = `hsla(${hue % 360}, 80%, 60%, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x - p.vx * len * 2, p.y - p.vy * len * 2);
+        ctx.stroke();
+      }
+      ctx.globalCompositeOperation = "source-over";
 
       requestAnimationFrame(draw);
     }
-
     requestAnimationFrame(draw);
 
     return () => { canvas.remove(); window.removeEventListener("resize", resize); };
