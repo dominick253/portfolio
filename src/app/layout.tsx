@@ -90,8 +90,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-bg text-text-primary font-sans antialiased selection:bg-accent/20 selection:text-text-primary">
-        {children}
+      <body className="min-h-screen bg-canvas text-text-primary font-sans antialiased selection:bg-accent/20 selection:text-text-primary">
+        <div className="relative z-[1]">
+          {children}
+        </div>
       </body>
     </html>
   );
