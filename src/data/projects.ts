@@ -208,32 +208,6 @@ export const projects: Project[] = [
     imageAlt: "Knowledge router architecture",
   },
   {
-    slug: "dirtbike-game",
-    title: "Dirt Bike Racing Game",
-    subtitle: "Three.js Browser Game with TDD",
-    description:
-      "Production-quality browser racing game built with Three.js featuring modular terrain, physics-based bike controls, and comprehensive test suite using Vitest.",
-    problem:
-      "Need a performant, self-contained browser game that demonstrates real engineering skills (physics, rendering, testing) without heavy dependencies or build complexity.",
-    solution:
-      "Built with Three.js for 3D rendering, custom physics integration, modular terrain system. TDD workflow with Vitest covering collision detection, physics updates, and render loop logic.",
-    outcome:
-      "Fully playable browser game with smooth 60fps rendering, realistic physics, single-file HTML delivery option, comprehensive test coverage.",
-    techStack: [
-      "Three.js",
-      "JavaScript",
-      "HTML5 Canvas",
-      "Vitest",
-      "TDD",
-      "Physics",
-      "3D Rendering",
-    ],
-    featured: false,
-    githubUrl: "https://github.com/dominick253/threejs-arcade-games",
-    liveUrl: "/projects/dirtbike",
-    imageAlt: "Dirt bike racing game screenshot",
-  },
-  {
     slug: "homelab-infra",
     title: "Homelab Infrastructure",
     subtitle: "Production Home Lab with Kubernetes & Proxmox",
