@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -18,98 +18,84 @@ export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      {/* Desktop Navigation */}
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "glass-strong shadow-lg shadow-black/10" : ""
+          isScrolled ? "glass-strong shadow-lg shadow-black/40" : ""
         }`}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
+            <a href="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 rounded-lg bg-[#5e6ad2] flex items-center justify-center shadow-lg shadow-[#5e6ad2]/20">
+                <span className="text-white text-xs font-bold tracking-tight">DP</span>
               </div>
-              <span className="text-text-primary font-semibold text-sm tracking-wide group-hover:text-accent-hover transition-colors hidden sm:block">
+              <span className="text-text-primary font-medium text-sm tracking-tight group-hover:text-accent-hover transition-colors hidden sm:block">
                 Dominick Pescetto
               </span>
             </a>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-0.5">
               {navItems.map((item) => (
                 <a
                   key={item.href}
                   href={item.href}
-                  className="px-4 py-2 text-text-secondary hover:text-accent-hover rounded-lg hover:bg-accent-glow transition-all text-sm font-medium"
+                  className="px-3.5 py-2 text-text-subtle hover:text-text-primary rounded-lg hover:bg-surface transition-all text-sm font-medium tracking-tight"
                 >
                   {item.label}
                 </a>
               ))}
             </div>
 
-            {/* CTA Button */}
             <div className="hidden md:block">
-              <a href="/contact" className="btn-primary !py-2 !px-5 text-sm">
-                Let's Talk
+              <a href="/contact" className="btn-power !py-2 !px-5 text-xs">
+                Hire Me
               </a>
             </div>
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-text-secondary hover:text-text-primary"
+              className="md:hidden p-2 text-text-subtle hover:text-text-primary"
               aria-label="Toggle menu"
             >
-              {mobileOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
+              {mobileOpen ? <Menu className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 md:hidden"
           >
-            <div
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={() => setMobileOpen(false)}
-            />
+            <div className="absolute inset-0 bg-canvas/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative glass-strong m-4 rounded-2xl p-6"
+              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+              className="relative glass-strong m-3 rounded-2xl p-5 border border-border"
             >
-              <nav className="flex flex-col gap-2">
+              <nav className="flex flex-col gap-1">
                 {navItems.map((item) => (
                   <a
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileOpen(false)}
-                    className="px-4 py-3 text-text-secondary hover:text-accent-hover hover:bg-accent-glow rounded-lg transition-all text-base font-medium"
+                    className="px-4 py-3 text-text-subtle hover:text-text-primary hover:bg-surface rounded-xl transition-all text-sm font-medium"
                   >
                     {item.label}
                   </a>
@@ -117,9 +103,9 @@ export default function Navigation() {
                 <a
                   href="/contact"
                   onClick={() => setMobileOpen(false)}
-                  className="btn-primary mt-4 justify-center"
+                  className="btn-power mt-3 justify-center"
                 >
-                  Let's Talk
+                  Hire Me
                 </a>
               </nav>
             </motion.div>

@@ -9,7 +9,7 @@ const geistSans = await fetch(
 
 export const metadata: Metadata = {
   title: {
-    default: "Dominick Pescetto — AI Engineer & CTV Platform Architect",
+    default: "Dominick Pescetto - AI Engineer & CTV Platform Architect",
     template: "%s | Dominick Pescetto",
   },
   description:
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
     type: "profile",
     locale: "en_US",
     siteName: "Dominick Pescetto",
-    title: "Dominick Pescetto — AI Engineer & CTV Platform Architect",
+    title: "Dominick Pescetto - AI Engineer & CTV Platform Architect",
     description:
       "Building production-grade AI infrastructure and cross-platform streaming apps for Roku, FireTV, Android TV, Tizen, and webOS.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dominick Pescetto — AI Engineer & CTV Platform Architect",
+    title: "Dominick Pescetto - AI Engineer & CTV Platform Architect",
     description:
       "Building production-grade AI infrastructure and cross-platform streaming apps for Roku, FireTV, Android TV, Tizen, and webOS.",
   },
@@ -76,7 +76,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" className="bg-canvas">
       <head>
         {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

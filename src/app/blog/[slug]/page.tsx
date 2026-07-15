@@ -112,7 +112,7 @@ function getPostContent(slug: string): string | null {
 The answer was a modular architecture with four core services:
 
 ## Intent Router (Port 8765)
-The first line of classification. Every incoming request hits a BM25-based classifier that maps natural language to one of several intents (code, research, system, creative, etc.). This alone reduced the tool surface by 94% — instead of presenting all 50+ tools to every model, each intent only sees the 2-12 tools it actually needs.
+The first line of classification. Every incoming request hits a BM25-based classifier that maps natural language to one of several intents (code, research, system, creative, etc.). This alone reduced the tool surface by 94% - instead of presenting all 50+ tools to every model, each intent only sees the 2-12 tools it actually needs.
 
 ## Entity Extractor (Port 8766)
 Named entity recognition fine-tuned on our specific domain. Extracts FILE_PATH, URL, CRON_ID, SKILL_NAME, MCP_TOOL, FUNC_NAME, PROJECT, and VALUE from user queries. This structured extraction feeds directly into the knowledge graph.
@@ -124,7 +124,7 @@ The glue layer. Maps extracted intent + entities to specific MCP tools and serve
 Built on ChromaDB with BGE-small-en-v1.5 embeddings. Stores every codebase analysis result, entity relationship, and session context. The graph supports BM25 full-text search and semantic vector search simultaneously.
 
 ## Deployment
-All four services run as systemd user units on a Proxmox VM. Health monitoring via cron every 15 minutes. The entire stack was deployed iteratively — each service was tested independently before integration.`,
+All four services run as systemd user units on a Proxmox VM. Health monitoring via cron every 15 minutes. The entire stack was deployed iteratively - each service was tested independently before integration.`,
     "ctv-platform-parity": `Building the same streaming app for six different TV platforms is a masterclass in managing complexity. Every platform has its own:
 
 - SDK and development tools

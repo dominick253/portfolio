@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Globe, Video, UserPlus, Mail, Heart } from "lucide-react";
 
 const links = [
@@ -22,30 +21,28 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-border mt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <a href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <a href="/" className="inline-flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-[#5e6ad2] flex items-center justify-center shadow-lg shadow-[#5e6ad2]/20">
                 <span className="text-white text-xs font-bold">DP</span>
               </div>
-              <span className="font-semibold text-text-primary">Dominick Pescetto</span>
+              <span className="font-medium text-text-primary text-sm tracking-tight">Dominick Pescetto</span>
             </a>
-            <p className="text-text-muted text-sm leading-relaxed">
+            <p className="text-text-muted text-xs leading-relaxed">
               AI Engineer &amp; CTV Platform Architect building production-grade systems.
             </p>
-            <p className="text-text-muted text-xs mt-2 font-mono">
-              dominickp.com
-            </p>
+            <p className="text-text-muted/50 text-[10px] mt-2 font-mono">dominickp.com</p>
           </div>
 
-          {/* Navigation */}
+          {/* Navigate */}
           <div>
-            <h4 className="text-text-primary font-medium mb-4 text-sm uppercase tracking-wider">Navigate</h4>
-            <ul className="space-y-3">
+            <span className="micro block mb-4">Navigate</span>
+            <ul className="space-y-2.5">
               {links.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="text-text-secondary hover:text-accent-hover transition-colors text-sm">
+                  <a href={link.href} className="text-text-muted hover:text-text-primary transition-colors text-sm">
                     {link.label}
                   </a>
                 </li>
@@ -53,14 +50,14 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Social */}
+          {/* Connect */}
           <div>
-            <h4 className="text-text-primary font-medium mb-4 text-sm uppercase tracking-wider">Connect</h4>
-            <ul className="space-y-3">
+            <span className="micro block mb-4">Connect</span>
+            <ul className="space-y-2.5">
               {socialLinks.map((social) => (
                 <li key={social.label}>
-                  <a href={social.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-text-secondary hover:text-accent-hover transition-colors text-sm">
-                    <social.icon className="w-4 h-4" />
+                  <a href={social.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-text-muted hover:text-text-primary transition-colors text-sm">
+                    <social.icon className="w-3.5 h-3.5" />
                     {social.label}
                   </a>
                 </li>
@@ -70,23 +67,23 @@ export default function Footer() {
 
           {/* Quote */}
           <div className="lg:text-right">
-            <div className="glass rounded-xl p-6 text-center">
-              <p className="text-text-secondary italic text-sm leading-relaxed">&ldquo;Learning every day.&rdquo;</p>
-              <p className="text-text-muted text-xs mt-2">— Dom</p>
+            <div className="glass rounded-xl p-5 text-center border border-border">
+              <p className="text-text-muted italic text-sm leading-relaxed">&ldquo;Learning every day.&rdquo;</p>
+              <p className="text-text-muted/50 text-[10px] mt-2 font-mono">- Dom</p>
             </div>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-text-muted text-xs">
+        <div className="mt-12 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-text-muted text-[10px]">
             &copy; {new Date().getFullYear()} Dominick Pescetto. Built with{" "}
-            <Heart className="w-3 h-3 inline text-red-400 fill-red-400" />{" "}
+            <Heart className="w-2.5 h-2.5 inline text-red-400/70 fill-red-400/70" />{" "}
             and Next.js.
           </p>
-          <div className="flex items-center gap-4 text-text-muted text-xs">
+          <div className="flex items-center gap-3 text-text-muted text-[10px]">
             <span>All systems operational</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
+            <span className="status-dot green" />
           </div>
         </div>
       </div>

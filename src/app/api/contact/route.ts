@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       await fs.writeFile(filePath, JSON.stringify(existing, null, 2));
     } catch (err) {
       console.error("[Contact] Storage error:", err);
-      // Non-blocking — don't fail the response
+      // Non-blocking - don't fail the response
     }
 
     return NextResponse.json(

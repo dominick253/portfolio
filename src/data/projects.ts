@@ -29,7 +29,7 @@ export const projects: Project[] = [
     description:
       "Production-grade AI agent framework with multi-model routing, MCP integration, and a 600K+ node knowledge graph. Orchestrates intent classification, entity extraction, and tool execution across microservices.",
     problem:
-      "Need a scalable architecture where multiple AI models collaborate, context is maintained across sessions, and tools are dynamically dispatched based on intent — all with sub-second latency.",
+      "Need a scalable architecture where multiple AI models collaborate, context is maintained across sessions, and tools are dynamically dispatched based on intent - all with sub-second latency.",
     solution:
       "Built a modular agent framework with an Intent Router (BM25 classification), Entity Extractor, MCP server integration, and a unified knowledge graph. Deployed as 4+ microservices with health monitoring cron.",
     outcome:
@@ -238,7 +238,7 @@ export const projects: Project[] = [
     title: "Homelab Infrastructure",
     subtitle: "Production Home Lab with Kubernetes & Proxmox",
     description:
-      "Multi-node Proxmox cluster running Kubernetes, Docker containers, VMs, and dedicated services — all exposed via Cloudflare tunnel. CI/CD pipeline using Ansible for zero-downtime deployments.",
+      "Multi-node Proxmox cluster running Kubernetes, Docker containers, VMs, and dedicated services - all exposed via Cloudflare tunnel. CI/CD pipeline using Ansible for zero-downtime deployments.",
     problem:
       "Home lab needs to support multiple concurrent workloads (AI inference, CTV development, media streaming, monitoring) with high availability and automated deployments.",
     solution:
@@ -267,7 +267,7 @@ export const blogPosts: BlogPost[] = [
     title: "Architecture of Hermes: Building a Production AI Agent Framework",
     date: "2026-07-14",
     excerpt:
-      "How we built an AI agent framework with intent routing, MCP integration, and a 600K+ node knowledge graph — including lessons learned from deploying on Intel Arc GPUs.",
+      "How we built an AI agent framework with intent routing, MCP integration, and a 600K+ node knowledge graph - including lessons learned from deploying on Intel Arc GPUs.",
     category: "AI Architecture",
   },
   {
@@ -275,7 +275,7 @@ export const blogPosts: BlogPost[] = [
     title: "Achieving Feature Parity Across 6 CTV Platforms",
     date: "2026-07-10",
     excerpt:
-      "Challenges and solutions for maintaining feature parity across Roku, FireTV, Android TV, Tizen, webOS, and Vizio — from shared components to platform-specific CI/CD.",
+      "Challenges and solutions for maintaining feature parity across Roku, FireTV, Android TV, Tizen, webOS, and Vizio - from shared components to platform-specific CI/CD.",
     category: "CTV Development",
   },
   {
@@ -283,7 +283,7 @@ export const blogPosts: BlogPost[] = [
     title: "vLLM on Intel Arc Pro B70: Benchmarks, Optimizations, and Gotchas",
     date: "2026-07-12",
     excerpt:
-      "Deploying vLLM with tensor parallelism across 4 Intel Arc GPUs — prefill benchmarks, KV cache management, NVFP4 quantization results, and the --entrypoint /bin/bash gotcha.",
+      "Deploying vLLM with tensor parallelism across 4 Intel Arc GPUs - prefill benchmarks, KV cache management, NVFP4 quantization results, and the --entrypoint /bin/bash gotcha.",
     category: "GPU Inference",
   },
 ];

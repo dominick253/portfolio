@@ -41,7 +41,7 @@ export default function ContactForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-1.5">
+            <label htmlFor="name" className="block text-xs font-medium text-text-secondary mb-1.5 tracking-tight">
               Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -54,7 +54,7 @@ export default function ContactForm() {
             />
           </div>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1.5">
+            <label htmlFor="email" className="block text-xs font-medium text-text-secondary mb-1.5 tracking-tight">
               Email <span className="text-red-400">*</span>
             </label>
             <input
@@ -68,7 +68,7 @@ export default function ContactForm() {
           </div>
         </div>
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-text-secondary mb-1.5">
+          <label htmlFor="message" className="block text-xs font-medium text-text-secondary mb-1.5 tracking-tight">
             Message <span className="text-red-400">*</span>
           </label>
           <textarea
@@ -84,7 +84,7 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={formState.status === "loading"}
-          className={`btn-primary w-full justify-center ${formState.status === "loading" ? "opacity-70 cursor-not-allowed" : ""}`}
+          className={`btn-power w-full justify-center text-xs ${formState.status === "loading" ? "opacity-70 cursor-not-allowed" : ""}`}
         >
           {formState.status === "loading" ? (
             <>
