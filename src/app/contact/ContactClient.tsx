@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, Globe, Video, UserPlus, ExternalLink, FileText } from "lucide-react";
+import { Mail, Globe, UserPlus, ExternalLink, FileText } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ContactForm from "@/components/ContactForm";
@@ -11,7 +11,6 @@ const quickContacts = [
   { icon: Mail, label: "Email", value: "dominick253@gmail.com", href: "mailto:dominick253@gmail.com" },
   { icon: Globe, label: "GitHub", value: "github.com/dominick253", href: "https://github.com/dominick253" },
   { icon: UserPlus, label: "LinkedIn", value: "dominick-pescetto-771a7616b", href: "https://www.linkedin.com/in/dominick-pescetto-771a7616b/" },
-  { icon: Video, label: "YouTube", value: "youtube.com/@dominickpescetto", href: "https://www.youtube.com/channel/UCLJ1DvfOket2VpfooqYVPmQ" },
   { icon: FileText, label: "Resume", value: "resume.dominickp.com", href: "https://resume.dominickp.com" },
 ];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Video, UserPlus, Mail, Heart } from "lucide-react";
+import { Globe, UserPlus, Mail, Heart } from "lucide-react";
 
 const links = [
   { label: "Projects", href: "/projects" },
@@ -12,7 +12,6 @@ const links = [
 
 const socialLinks = [
   { label: "GitHub", href: "https://github.com/dominick253", icon: Globe },
-  { label: "YouTube", href: "https://www.youtube.com/channel/UCLJ1DvfOket2VpfooqYVPmQ", icon: Video },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/dominick-pescetto-771a7616b/", icon: UserPlus },
   { label: "Email", href: "mailto:dominick253@gmail.com", icon: Mail },
 ];

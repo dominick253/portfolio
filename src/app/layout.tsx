@@ -65,7 +65,6 @@ const jsonLd = {
     "AI Engineer and CTV Platform Architect building production-grade AI infrastructure and cross-platform streaming apps.",
   sameAs: [
     "https://github.com/dominick253",
-    "https://www.youtube.com/channel/UCLJ1DvfOket2VpfooqYVPmQ",
     "https://www.freecodecamp.org/Dominick253",
   ],
 };
