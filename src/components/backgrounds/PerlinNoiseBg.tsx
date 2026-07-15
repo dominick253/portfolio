@@ -72,7 +72,7 @@ export default function FlowFieldBg() {
     resize();
 
     function draw() {
-      const speed = 3;
+      const speed = 0.8;
       for (const p of particles) {
         const scale = 0.004;
         const angle = Noise.fbm(p.x * scale, p.y * scale, 3) * Math.PI * 4;
@@ -87,8 +87,8 @@ export default function FlowFieldBg() {
         }
       }
 
-      // Trail fade
-      ctx.fillStyle = "rgba(5,6,8,0.08)";
+      // Trail fade - subtler for longer visible traces
+      ctx.fillStyle = "rgba(5,6,8,0.06)";
       ctx.fillRect(0, 0, W, H);
       ctx.globalCompositeOperation = "lighter";
 
@@ -97,12 +97,12 @@ export default function FlowFieldBg() {
         const hue = (Noise.fbm(p.x * scale, p.y * scale, 2) * 0.5 + 0.5) * 240 + 180;
         const alpha = 0.3 + Math.abs(Math.sin(p.life * Math.PI * 2)) * 0.3;
         const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        const len = Math.min(8, spd * 3);
+        const len = Math.min(60, spd * 12);
         ctx.strokeStyle = `hsla(${hue % 360}, 80%, 60%, ${alpha})`;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x - p.vx * len * 2, p.y - p.vy * len * 2);
+        ctx.lineTo(p.x - p.vx * len, p.y - p.vy * len);
         ctx.stroke();
       }
       ctx.globalCompositeOperation = "source-over";
