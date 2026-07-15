@@ -28,8 +28,8 @@ export default function VoronoiBg() {
       ctx.clearRect(0, 0, W, H);
 
       for (const s of seeds) {
-        s.x += s.vx * 0.08; s.y += s.vy * 0.08;
-        s.hue += 0.03; if (s.hue > 360) s.hue -= 360;
+        s.x += s.vx * 0.16; s.y += s.vy * 0.16;
+        s.hue += 0.06; if (s.hue > 360) s.hue -= 360;
         if (s.x < 5 || s.x > W - 5) s.vx *= -1;
         if (s.y < 5 || s.y > H - 5) s.vy *= -1;
         s.x = Math.max(5, Math.min(W - 5, s.x));

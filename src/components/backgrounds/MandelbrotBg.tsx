@@ -7,7 +7,7 @@ export default function MandelbrotBg() {
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.55";
+    canvas.style.cssText = "position:fixed;top:0;left:0;width:100vw;height:100vh;display:block;z-index:0;pointer-events:none;opacity:0.45";
     document.body.prepend(canvas);
 
     const ctx = canvas.getContext("2d")!;
@@ -17,29 +17,54 @@ export default function MandelbrotBg() {
     canvas.style.width = W + "px"; canvas.style.height = H + "px";
     ctx.scale(dpr, dpr);
 
-    let time = 0, zoom = 1.0, ox = -0.5, oy = 0;
-    let lastRender = 0;
+    let scanLine = 0;
+    let zoom = 1.0, ox = -0.5, oy = 0;
+    let time = 0;
+    let scanDir = 1;
 
     function resize() {
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = W * dpr; canvas.height = H * dpr;
       canvas.style.width = W + "px"; canvas.style.height = H + "px";
       ctx.scale(dpr, dpr);
+      // Reset scan on resize
+      scanLine = 0;
     }
     window.addEventListener("resize", resize);
 
-    function render() {
+    // Pre-allocate image data
+    let imgData: ImageData | null = null;
+
+    function renderScan() {
       time += 0.001;
-      const driftX = Math.sin(time * 0.01) * 0.02;
-      const driftY = Math.cos(time * 0.015) * 0.02;
+      const driftX = Math.sin(time * 0.01) * 0.015;
+      const driftY = Math.cos(time * 0.015) * 0.015;
       const cx = ox + driftX, cy = oy + driftY;
+      const maxIter = 30;
 
-      const maxIter = 35;
       const w = Math.floor(W), h = Math.floor(H);
-      const img = ctx.createImageData(w, h);
-      const d = img.data;
 
-      for (let py = 0; py < h; py++) {
+      // First frame: create imageData
+      if (!imgData || imgData.width !== w || imgData.height !== h) {
+        imgData = ctx.createImageData(w, h);
+        // Initialize to black
+        for (let i = 0; i < imgData.data.length; i += 4) {
+          imgData.data[i] = 0;
+          imgData.data[i + 1] = 0;
+          imgData.data[i + 2] = 0;
+          imgData.data[i + 3] = 255;
+        }
+        scanLine = 0;
+      }
+
+      const d = imgData.data;
+      const batchSize = 4; // rows per frame
+
+      // Render a batch of scan lines
+      for (let b = 0; b < batchSize; b++) {
+        const py = scanLine;
+        if (py < 0 || py >= h) break;
+
         for (let px = 0; px < w; px++) {
           const x0 = cx + (px / w - 0.5) * 3.0 / zoom;
           const y0 = cy + (py / h - 0.5) * 3.0 / zoom * (h / w);
@@ -54,7 +79,7 @@ export default function MandelbrotBg() {
           } else {
             const t = iter / maxIter;
             const hue = (iter * 30 + t * 60) % 360;
-            const s = 1, l = 0.35 + t * 0.45;
+            const s = 1, l = 0.3 + t * 0.4;
             const c2 = (1 - Math.abs(2 * l - 1)) * s;
             const x2 = c2 * (1 - Math.abs((hue / 60) % 2 - 1));
             const m2 = l - c2 / 2;
@@ -71,13 +96,21 @@ export default function MandelbrotBg() {
             d[idx + 3] = 255;
           }
         }
+        scanLine += scanDir;
       }
-      ctx.putImageData(img, 0, 0);
-      lastRender = time;
-      requestAnimationFrame(render);
+
+      ctx.putImageData(imgData, 0, 0);
+
+      // If scan complete, pause, reverse direction and keep drifting
+      if (scanLine >= h || scanLine < 0) {
+        scanDir *= -1;
+        scanLine += scanDir;
+      }
+
+      requestAnimationFrame(renderScan);
     }
 
-    render();
+    renderScan();
 
     return () => { canvas.remove(); window.removeEventListener("resize", resize); };
   }, []);
