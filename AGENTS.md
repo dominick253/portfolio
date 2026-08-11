@@ -1,3 +1,125 @@
+<!-- dox-managed:v2 -->
+# portfolio Repository Contract
+
+## Core Contract
+
+- This file is the root work contract for `dominick253/portfolio`.
+- **DOX chain:** `~/.hermes/AGENTS.md` -> `/home/dom/AGENTS.md` -> this file -> nearest child `AGENTS.md`.
+- Read the full chain before editing any file.
+- A closer contract can add constraints but cannot weaken a parent contract.
+- After each meaningful change, perform a DOX pass. Update stale commands, paths, architecture notes, and safety rules.
+- Source code, tests, build files, and CI configuration are authoritative. Documentation must match them.
+
+## Repository Mission
+
+This is a Next.js project bootstrapped with create-next-app.
+
+## Repository Facts
+
+- Default branch: `main`
+- Primary toolchains: Node.js / JavaScript / TypeScript
+- Visibility: public
+- Generated and dependency directories are not source. Do not edit them unless the repository explicitly tracks them as inputs.
+
+## Repository Map
+
+| Path | Purpose |
+|---|---|
+| `.github/` | GitHub workflows, templates, and repository automation. |
+| `public/` | Public static assets. |
+| `src/` | Primary source code. |
+| `AGENTS.md` | Root project file or artifact. |
+| `CLAUDE.md` | Root project file or artifact. |
+| `Dockerfile` | Root project file or artifact. |
+| `README.md` | Root project file or artifact. |
+| `eslint.config.mjs` | Root project file or artifact. |
+| `next.config.ts` | Root project file or artifact. |
+| `package-lock.json` | Root project file or artifact. |
+| `package.json` | Root project file or artifact. |
+| `postcss.config.mjs` | Root project file or artifact. |
+| `public/` | Public static assets. |
+| `src/` | Primary source code. |
+| `tsconfig.json` | Root project file or artifact. |
+
+## Scoped Contracts
+
+- No child `AGENTS.md` files are present. Add one when a subtree needs stricter rules.
+
+When work enters a scoped path, read every parent contract in order. If a listed child file is moved or deleted, update this section in the same change.
+
+## Authoritative Commands
+
+| Command | Purpose |
+|---|---|
+| `npm run build` | Runs the declared `build` package script. |
+| `npm run dev` | Runs the declared `dev` package script. |
+| `npm run lint` | Runs the declared `lint` package script. |
+| `npm run start` | Runs the declared `start` package script. |
+
+- Use only commands supported by files in this repository.
+- Inspect package scripts, Make targets, Gradle tasks, workflows, and tool configuration before adding commands.
+- Do not invent a passing command or treat an unavailable tool as a successful check.
+
+## Change Workflow
+
+1. Read this contract and the nearest scoped contract.
+2. Inspect the implementation, tests, manifests, and relevant workflow files.
+3. Record the current behavior or reproduce the defect.
+4. Make the smallest coherent change. Do not add unrelated cleanup.
+5. Run the narrowest relevant check first.
+6. Run the repository's broader build, test, lint, and type checks that apply.
+7. Review the diff for generated files, secrets, unrelated edits, and stale documentation.
+8. Perform a final DOX pass before commit.
+
+## Verification Contract
+
+- A documentation-only change must validate referenced paths, commands, links, and examples.
+- A source change must pass its focused tests plus the applicable repository checks above.
+- A build configuration or CI change must be verified locally when possible and then verified in CI.
+- A UI change needs functional state checks, not only screenshots.
+- A service change needs a bounded startup or health check and clean shutdown evidence.
+- If a required check cannot run, report `NOT RUN` with the exact blocker. Never report it as passed.
+- Do not claim completion while required checks fail.
+
+## Safety and Boundaries
+
+- Never commit credentials, tokens, private keys, device passwords, `.env` values, or production data.
+- Do not modify generated output, vendored dependencies, lockfiles, or snapshots unless the task requires it and verification covers it.
+- Do not run deployment, release, migration, destructive database, infrastructure, or external messaging actions without explicit task scope.
+- Preserve backward compatibility unless the task explicitly authorizes a breaking change.
+- Treat workflow files, authentication, payment, analytics, and data migrations as high-risk areas.
+- Do not disable tests, lint rules, security checks, or CI gates to obtain a pass.
+
+## Git and CI
+
+- Keep commits focused and use an accurate conventional commit message when the repository accepts it.
+- Inspect the full staged diff before commit.
+- Do not rewrite shared history.
+- After push, inspect every triggered CI job. A successful push is not proof of a successful change.
+- If no CI exists, state that limitation and rely on the documented local verification.
+
+### Discovered Workflows
+
+- `.github/workflows/ci.yml`
+
+## Documentation Freshness
+
+Update this file in the same change when any of these change:
+
+- repository structure or ownership boundaries;
+- build, test, lint, format, type-check, deploy, or release commands;
+- required environment variables or external services;
+- CI jobs, quality gates, or branch policy;
+- public interfaces, data contracts, security rules, or migration steps;
+- child `AGENTS.md` scope.
+
+Remove stale guidance. Do not preserve obsolete instructions as historical notes inside an active contract.
+<!-- /dox-managed -->
+
+## Repository-Specific Guidance
+
+The following project rules remain binding where they do not conflict with the DOX chain above. Verify them against current source before use.
+
 # AGENTS.md — dominick253/portfolio
 
 > **Canonical AI Agent Protocol**
@@ -308,5 +430,3 @@ CMD ["node", "server.js"]
 | CI/CD | `.github/workflows/` |
 
 ---
-
-*Generated from repo analysis. Last updated: 2026-07-17.*
