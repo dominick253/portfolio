@@ -37,8 +37,6 @@ This is a Next.js project bootstrapped with create-next-app.
 | `package-lock.json` | Root project file or artifact. |
 | `package.json` | Root project file or artifact. |
 | `postcss.config.mjs` | Root project file or artifact. |
-| `public/` | Public static assets. |
-| `src/` | Primary source code. |
 | `tsconfig.json` | Root project file or artifact. |
 
 ## Scoped Contracts
